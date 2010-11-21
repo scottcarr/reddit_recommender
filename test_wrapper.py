@@ -1,8 +1,7 @@
 #!/usr/bin/env python	
 
-import sys
 import random
-import pdb
+import os
 
 PERCENT_TEST = .20
 
@@ -39,3 +38,6 @@ with open("training_dataset",'w') as f:
 	for line in training_set:
 		f.write(line)
 
+os.system("cat training_dataset | ./srrecs.py \"write_matrix('affinities.cm', 'affinities.clabel', 'affinities.rlabel')\"")
+
+os.system("R -f ./srrecs.r")
