@@ -7,7 +7,8 @@ import cluster_aff
 def test_clusters(recommend_n_largest = 10, 
                   accuracy_threshold = 0.5, 
                   aff_clabel='affinities.clabel',
-                  aff_dump = 'publicvotes-20101018_affinities.dump',
+                  test_data_file = 'test_dataset',
+		  training_data_file = 'training_dataset',
                   cluster_id_file = 'clusters_file',
                  ):
         """
@@ -41,10 +42,10 @@ def test_clusters(recommend_n_largest = 10,
 
         # cluster is a dict where the keys are cluster ids (1...50) and the values are a list of users that
         # belong to that cluster
-        clusters = cluster_aff.sum_cluster_affinities(memberships, aff_dump)
+        clusters = cluster_aff.sum_cluster_affinities(memberships, training_data_file)
 
         #this does the actual testing and printing
-        cluster_aff.generate_and_check_recommendations(memberships, aff_dump, accuracy_threshold, clusters, recommend_n_largest)
+        cluster_aff.generate_and_check_recommendations(memberships, test_data_file, accuracy_threshold, clusters, recommend_n_largest)
 
 if __name__ == '__main__':
         eval(sys.argv[1])

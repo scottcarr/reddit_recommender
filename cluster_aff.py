@@ -41,14 +41,14 @@ def sum_cluster_affinities(memberships, aff_filename):
 	f_aff.close()
 	return clusters
 
-def check_recommendations(memberships, top_srs, aff_filename, threshold):		
+def check_recommendations(memberships, top_srs, test_data_file, threshold):		
 	""" 
         takes the top recommended subreddits (top_srs) and checks that
         the members of the associated cluster have affinities above a 
         threshold for the recommended subreddits
         """
         
-        f_aff = open(aff_filename)
+        f_aff = open(test_data_file)
 	aff_reader = csv.reader(f_aff,delimiter='\t')
 	
 	total_good = 0
@@ -76,7 +76,7 @@ def check_recommendations(memberships, top_srs, aff_filename, threshold):
         totals[1] = total_bad
         return totals
 
-def generate_and_check_recommendations(memberships, filename, threshold, clusters, n_top): 
+def generate_and_check_recommendations(memberships, test_data_file, threshold, clusters, n_top): 
 	""" 
         generates the top recommended subreddits (top_srs) and then calls 
         check_recommendations to check them.  Also outputs the total good and
@@ -91,7 +91,7 @@ def generate_and_check_recommendations(memberships, filename, threshold, cluster
                 for item in temp_largest:
                         largest[i][item[0]] =  item[1]
 
-        totals = check_recommendations(memberships, largest, filename,threshold)
+        totals = check_recommendations(memberships, largest, test_data_file,threshold)
         good += totals[0]
         bad += totals[1]
 
