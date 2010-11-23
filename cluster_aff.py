@@ -76,7 +76,7 @@ def check_recommendations(memberships, top_srs, test_data_file, threshold):
         totals[1] = total_bad
         return totals
 
-def generate_and_check_recommendations(memberships, test_data_file, threshold, clusters, n_top): 
+def generate_and_check_recommendations(memberships, test_data_file, threshold, clusters, n_top, test_data_size): 
 	""" 
         generates the top recommended subreddits (top_srs) and then calls 
         check_recommendations to check them.  Also outputs the total good and
@@ -97,5 +97,8 @@ def generate_and_check_recommendations(memberships, test_data_file, threshold, c
 
         print "Total good recommendations:", good
         print "Total bad recommendations:", bad
-        print "Percent good:", float( good*100.00 / (bad + good) )
-
+	print "Total undefined:", test_data_size - good - bad
+	print "Percent good:", float( good*100.00 / (bad + good) )
+	print "Percent undefined:", (test_data_size - good - bad)*100.00/test_data_size 
+	
+	return [good , bad]

@@ -47,5 +47,31 @@ def test_clusters(recommend_n_largest = 10,
         #this does the actual testing and printing
         cluster_aff.generate_and_check_recommendations(memberships, test_data_file, accuracy_threshold, clusters, recommend_n_largest)
 
+def iterate_n_largest(	min = 250,
+		      	max = 300,
+                  	accuracy_threshold = 0.5,
+			aff_clabel='affinities.clabel',
+                  	test_data_file = 'test_dataset',
+		 	training_data_file = 'training_dataset',
+                  	cluster_id_file = 'clusters_file',):
+
+	test_data_size = 0
+	with open(test_data_file) as f:
+		for line in f:
+			test_data_size += 1
+	
+	memberships = membership.build_membership(aff_clabel,cluster_id_file)
+
+        clusters = cluster_aff.sum_cluster_affinities(memberships, training_data_file)
+
+	for n in range(min,max):
+		print "N =", n
+		cluster_aff.generate_and_check_recommendations(	memberships, 
+								test_data_file, 
+								accuracy_threshold,
+								clusters, 	
+								n,
+								test_data_size)	
+
 if __name__ == '__main__':
         eval(sys.argv[1])
