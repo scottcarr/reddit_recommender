@@ -2,6 +2,7 @@ import csv
 import pdb
 from operator import itemgetter
 import heapq
+import math
 
 def sum_cluster_affinities(memberships, aff_filename):
 	"""
@@ -102,3 +103,34 @@ def generate_and_check_recommendations(memberships, test_data_file, threshold, c
 	print "Percent undefined:", (test_data_size - good - bad)*100.00/test_data_size 
 	
 	return [good , bad]
+
+def generate_median_sr_affs(votes_file):
+	f = open(votes_file,'r')
+	reader = csv.reader(f, delimiter='\t')
+	
+	srs = {}
+
+        for row in reader:
+		#each for in aff file is a tuple, so need to get the parts
+		user_id = row[0]
+		sr_id = row[1]
+		affinity = float(row[2])
+
+		if not(sr_id in srs):
+			srs[sr_id] = []
+		else:
+			srs[sr_id].append(affinity)
+	medians = {}
+	temp_list = []
+	for sr_id in srs:
+		temp_list = sorted(srs[sr_id])
+		middle_index = int(math.floor(len(temp_list)/2))
+		print middle_index
+		print temp_list
+		if not(len(temp_list) % 2 == 0):
+			#there is an even number of elements
+			medians[sr_id] = (temp_list[middle_index]+temp_list[middle_index+1])/2
+		else:
+			#there is an odd number of elements		
+			medians[sr_id] = temp_list[middle_index]
+	return medians 
