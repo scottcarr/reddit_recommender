@@ -42,7 +42,7 @@ def sum_cluster_affinities(memberships, aff_filename):
 	f_aff.close()
 	return clusters
 
-def check_recommendations(memberships, top_srs, test_data_file, threshold):		
+def check_recommendations(memberships, top_srs, test_data_file, threshold, medians):		
 	""" 
         takes the top recommended subreddits (top_srs) and checks that
         the members of the associated cluster have affinities above a 
@@ -65,10 +65,17 @@ def check_recommendations(memberships, top_srs, test_data_file, threshold):
                 try:
                         cluster = int(memberships[user_id])
                         if sr_id in top_srs[cluster]:
-                                if affinity > threshold:
-                                       total_good += 1
-                                else:
-                                        total_bad += 1
+                                #if affinity >= threshold:
+                                #       total_good += 1
+                                #else:
+                                #        total_bad += 1
+                                try:
+					if affinity >= medians[sr_id]:
+					       total_good += 1
+					else:
+						total_bad += 1
+				except KeyError:
+					print "That's weird, that subreddit wasn't found in the medians"
                 except KeyError:
                         #not all UIDs in affinities.dump appear in affinities.clabel
                         pass
@@ -77,7 +84,7 @@ def check_recommendations(memberships, top_srs, test_data_file, threshold):
         totals[1] = total_bad
         return totals
 
-def generate_and_check_recommendations(memberships, test_data_file, threshold, clusters, n_top, test_data_size): 
+def generate_and_check_recommendations(memberships, test_data_file, threshold, clusters, n_top, test_data_size, medians): 
 	""" 
         generates the top recommended subreddits (top_srs) and then calls 
         check_recommendations to check them.  Also outputs the total good and
@@ -92,7 +99,7 @@ def generate_and_check_recommendations(memberships, test_data_file, threshold, c
                 for item in temp_largest:
                         largest[i][item[0]] =  item[1]
 
-        totals = check_recommendations(memberships, largest, test_data_file,threshold)
+        totals = check_recommendations(memberships, largest, test_data_file,threshold, medians)
         good += totals[0]
         bad += totals[1]
 
@@ -118,18 +125,17 @@ def generate_median_sr_affs(votes_file):
 
 		if not(sr_id in srs):
 			srs[sr_id] = []
+			srs[sr_id].append(affinity)
 		else:
 			srs[sr_id].append(affinity)
 	medians = {}
 	temp_list = []
-	for sr_id in srs:
+	for sr_id  in srs:
 		temp_list = sorted(srs[sr_id])
 		middle_index = int(math.floor(len(temp_list)/2))
-		print middle_index
-		print temp_list
-		if not(len(temp_list) % 2 == 0):
+		if len(temp_list) % 2 == 0:
 			#there is an even number of elements
-			medians[sr_id] = (temp_list[middle_index]+temp_list[middle_index+1])/2
+			medians[sr_id] = (temp_list[middle_index]+temp_list[middle_index-1])/2
 		else:
 			#there is an odd number of elements		
 			medians[sr_id] = temp_list[middle_index]
